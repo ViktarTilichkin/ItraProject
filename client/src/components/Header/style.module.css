@@ -1,0 +1,11 @@
+.wrapper {
+  display: flex;
+  justify-content: space-between;
+  padding: 2% 0;
+}
+
+.containerBtns {
+  display: flex;
+  justify-content: space-between;
+  width: 15%;
+}

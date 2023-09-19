@@ -1,0 +1,11 @@
+.wrapper {
+  .preview {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 3%;
+  }
+
+  .content {
+    width: 60%;
+  }
+}
