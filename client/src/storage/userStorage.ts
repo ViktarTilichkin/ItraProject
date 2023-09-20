@@ -1,47 +1,75 @@
 import { useState, useEffect } from 'react';
+import Cookies from 'js-cookie';
 
 interface User {
+    name: string;
     email: string;
-  username: string;
-  // Добавьте другие поля пользователя по вашим требованиям
+    accessToken: string,
+    expirationTime: string,
+    refreshToken: string
 }
 
 export function useUserStorage() {
-  const [user, setUser] = useState<User | null>(null);
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [accessToken, setAccessToken] = useState('');
+    const [expirationTime, setExpirationTime] = useState('');
+    const [refreshToken, setRefreshToken] = useState('');
 
-  useEffect(() => {
-    // При загрузке приложения проверяем, есть ли сохраненный JWT-токен
-    const storedToken = sessionStorage.getItem('jwtToken');
-    
-    if (true) {
-      
-      // Проверяем срок действия токена
-      if (true) {
-        // Токен действителен, устанавливаем пользователя
-        setUser({ email: 'user?.email', username: 'decodedToken.username' });
-      } else {
-        // Токен истек, очищаем его и пользователя
-        sessionStorage.removeItem('jwtToken');
-        setUser(null);
-      }
-    }
-  }, []);
+    useEffect(() => {
+        // При монтировании компонента, попробуйте загрузить данные из куков
+        const savedName = Cookies.get('name');
+        const savedEmail = Cookies.get('email');
+        const savedAccessToken = Cookies.get('accessToken');
+        const savedExpirationTime = Cookies.get('expirationTime');
+        const savedRefreshToken = Cookies.get('refreshToken');
+        if (savedName && savedEmail && savedAccessToken && savedExpirationTime && savedRefreshToken) {
+            setName(savedName);
+            setEmail(savedEmail);
+            setAccessToken(savedAccessToken);
+            setExpirationTime(savedExpirationTime);
+            setRefreshToken(savedRefreshToken);
+        }
 
-  // Функция для записи пользователя и токена
-  const setUserAndToken = (newUser: User, token: string) => {
-    sessionStorage.setItem('jwtToken', token);
-    setUser(newUser);
-  };
+    }, []);
 
-  // Функция для очистки пользователя и токена
-  const clearUserAndToken = () => {
-    sessionStorage.removeItem('jwtToken');
-    setUser(null);
-  };
+    const handleLogin = (newUser: User) => {
 
-  return {
-    user,
-    setUserAndToken,
-    clearUserAndToken,
-  };
+        setName(newUser.name);
+        setEmail(newUser.email);
+        setAccessToken(newUser.accessToken);
+        setExpirationTime(newUser.expirationTime);
+        setRefreshToken(newUser.refreshToken);
+
+        console.log(name, email, accessToken, expirationTime, refreshToken);
+
+        Cookies.set('name', newUser.name);
+        Cookies.set('email', newUser.email);
+        Cookies.set('accessToken', newUser.accessToken);
+        Cookies.set('expirationTime', newUser.expirationTime);
+        Cookies.set('refreshToken', newUser.refreshToken);
+    };
+
+    const handleLogout = () => {
+        setName('');
+        setEmail('');
+        setAccessToken('');
+        setExpirationTime('');
+        setRefreshToken('');
+        Cookies.remove('name');
+        Cookies.remove('email');
+        Cookies.remove('accessToken');
+        Cookies.remove('expirationTime');
+        Cookies.remove('refreshToken');
+    };
+
+    return {
+        name,
+        email,
+        accessToken,
+        expirationTime,
+        refreshToken,
+        handleLogin,
+        handleLogout
+    };
 }

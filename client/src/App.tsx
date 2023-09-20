@@ -5,6 +5,7 @@ import RegistrationPage from "./pages/RegistrationPage";
 import ReviewPage from "./pages/ReviewPage";
 import Layout from "./components/Layout";
 import { ThemeProvider } from "./providers/ThemeProvider";
+import { useUserStorage } from "./storage/userStorage";
 
 function App() {
   return (

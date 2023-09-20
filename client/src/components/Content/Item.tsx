@@ -1,7 +1,12 @@
 import style from "./style.module.css";
 import { Link } from "react-router-dom";
 
+import { useUserStorage } from '../../storage/userStorage';
+
 function Item({ filmItem }:any) {
+  
+  const {name,email, accessToken, handleLogin, handleLogout } = useUserStorage();
+  console.log(name,email, accessToken);
   return (
     <div className={style["wrapper"]}>
       <div className={style["item"]}>

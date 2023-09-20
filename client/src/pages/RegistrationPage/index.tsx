@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   TextInput,
   PasswordInput,
@@ -23,20 +23,23 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { useUserStorage } from '../../storage/userStorage';
+import { IconChevronsDownLeft } from '@tabler/icons-react';
+
 
 function RegistrationPage(props: PaperProps) {
-  const { user, setUserAndToken, clearUserAndToken } = useUserStorage();
+  const bcrypt = require("bcryptjs");
+  const { name, email, accessToken, handleLogin, handleLogout } = useUserStorage();
   const [createUser] = useCreateUserMutation();
 
   const form = useForm({
     initialValues: {
-      name: "",
-      email: "",
-      password: "",
-      provaiderName: "",
-      AccesToken: "",
-      ExpirationTime: "",
-      RefreshToken: "",
+      name: '',
+      email: '',
+      password: '',
+      provaiderName: '',
+      AccesToken: "no",
+      ExpirationTime: "no",
+      RefreshToken: "no",
       terms: true,
     },
 
@@ -47,11 +50,26 @@ function RegistrationPage(props: PaperProps) {
     },
   });
 
+  function hashPassword(password: any) {
+    try {
+      const saltRounds = 10; // Количество "раундов" соли (рекомендуется от 10 и выше)
+      const hashedPassword = bcrypt.hash(password, saltRounds);
+      return hashedPassword;
+    } catch (error) {
+      throw error;
+    }
+  }
   const navigate = useNavigate();
-  function sendRequest() {
-    createUser(form.values).then(() => {
-      const newUser = { email: form.values.email, username: form.values.name };
-      setUserAndToken(newUser, form.values.AccesToken )
+  async function sendRequest() {
+    const user = form.values;
+    await hashPassword(user.password)
+      .then((hashedPassword: string) => {
+        user.password = hashedPassword;
+      });
+    createUser(user).then((response: any) => {
+      const resp = response.data;
+      const newUser = { name: resp.name, email: resp.email, accessToken: resp.accesToken, expirationTime: resp.expirationTime, refreshToken: resp.refreshToken };
+      handleLogin(newUser);
       navigate("/");
     });
   }
@@ -60,8 +78,34 @@ function RegistrationPage(props: PaperProps) {
     const provider = new GoogleAuthProvider();
     const auth = getAuth();
     try {
-      const result = await signInWithPopup(auth, provider);
-      console.log(result);
+      const user = {
+        name: '',
+        email: '',
+        password: '',
+        provaiderName: '',
+        AccesToken: "no",
+        ExpirationTime: "no",
+        RefreshToken: "no",
+      };
+      await signInWithPopup(auth, provider).then((userCredential) => {
+        user.provaiderName = userCredential.providerId ?? '';
+        user.name = userCredential.user.displayName ?? '';
+        user.email = userCredential.user.email ?? '';
+        userCredential.user.getIdToken().then((accessToken) => {
+          user.AccesToken = accessToken;
+        });
+        user.RefreshToken = userCredential.user.refreshToken;
+      })
+      await hashPassword(user.email)
+        .then((hashedPassword: string) => {
+          user.password = hashedPassword;
+        });
+      await createUser(user).then((response: any) => {
+        const resp = response.data;
+        const newUser = { name: resp.name, email: resp.email, accessToken: resp.accesToken, expirationTime: resp.expirationTime, refreshToken: resp.refreshToken };
+        handleLogin(newUser);
+        navigate("/");
+      });
     } catch (error) {
       console.error(error);
     }
@@ -85,7 +129,7 @@ function RegistrationPage(props: PaperProps) {
 
       <Divider label="Or continue with email" labelPosition="center" my="lg" />
 
-      <form onSubmit={form.onSubmit(() => {})}>
+      <form onSubmit={form.onSubmit(() => { })}>
         <Stack>
           <TextInput
             label="Name"

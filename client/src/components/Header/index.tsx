@@ -1,19 +1,18 @@
-import React, { useEffect } from 'react';
 import style from "./style.module.css";
 import { Link } from "react-router-dom";
 import { Text, Button } from "@mantine/core";
 import useTheme from "../../hooks/useTheme";
 import { IconSun, IconMoonStars } from '@tabler/icons-react';
-import { useUserStorage } from '../../storage/userStorage';
+import { useUserStorage } from '../../storage/userStorage'; 
 
 function Header() {
   const { isDark, setIsDark } = useTheme();
-  const { user, setUserAndToken, clearUserAndToken } = useUserStorage();
+  const { name,email, accessToken, handleLogin, handleLogout } = useUserStorage();
 
-  useEffect(() => {
-    // Выводим информацию о пользователе
-    console.log(user);
-  }, [user]);
+  const Logout = () => {
+    console.log(name,email, accessToken);
+    handleLogout();
+  };
 
   return (
     <div className={style.wrapper}>
@@ -24,15 +23,21 @@ function Header() {
         WHAT SHOULD U WATCH/READ/PLAY
       </Text>
       <div className={style.containerBtns}>
-        { user ? <Text size="lg" weight={500}>
-        asdasdlasdk
-      </Text> : <div> nasdl </div>}
-        <Link to="/login">
-          <Button>Sign in</Button>
-        </Link>
-        <Link to="/reg">
-          <Button variant="outline">Sign up</Button>
-        </Link>
+        {name ? (
+          <div> 
+          <Text> Hello {name}</Text>
+          <Button onClick={handleLogout}>LogOut</Button>
+          </div>
+        ) : (
+          <>
+            <Link to="/login">
+              <Button>Sign in</Button>
+            </Link>
+            <Link to="/reg">
+              <Button variant="outline">Sign up</Button>
+            </Link>
+          </>
+        )}
       </div>
     </div>
   );

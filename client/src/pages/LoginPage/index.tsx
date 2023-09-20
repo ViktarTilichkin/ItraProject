@@ -13,9 +13,20 @@ import {
 import { GoogleButton } from "../../assets/SocialButtons";
 
 import { useForm } from "@mantine/form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from "firebase/auth";
+import { useUserStorage } from '../../storage/userStorage';
+import { useGetUserMutation } from "../../services/user";
 
 function LoginPage(props: PaperProps) {
+  const bcrypt = require("bcryptjs");
+  const { name, email, accessToken, handleLogin, handleLogout } = useUserStorage();
+  const [getUser] = useGetUserMutation();
   const form = useForm({
     initialValues: {
       email: "",
@@ -29,6 +40,34 @@ function LoginPage(props: PaperProps) {
         val.length < 6 ? "Password should include at least 6 characters" : null,
     },
   });
+
+  const navigate = useNavigate();
+
+  function hashPassword(password: any) {
+    try {
+      const saltRounds = 10; // Количество "раундов" соли (рекомендуется от 10 и выше)
+      const hashedPassword = bcrypt.hash(password, saltRounds);
+      return hashedPassword;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async function sendRequestLogin() {
+    const user = form.values;
+    console.log(user);
+    await hashPassword(user.password)
+      .then((hashedPassword: string) => {
+        user.password = hashedPassword;
+      });
+    getUser(user).then((response: any) => {
+      console.log(response);
+      //const resp = response.data;
+      //const newUser = { name: resp.name, email: resp.email, accessToken: resp.accesToken, expirationTime: resp.expirationTime, refreshToken: resp.refreshToken };
+      //handleLogin(newUser);
+      navigate("/");
+    });
+  }
 
   return (
     <Paper
@@ -48,7 +87,7 @@ function LoginPage(props: PaperProps) {
 
       <Divider label="Or continue with email" labelPosition="center" my="lg" />
 
-      <form onSubmit={form.onSubmit(() => {})}>
+      <form onSubmit={form.onSubmit(() => { })}>
         <Stack>
           <TextInput
             required
@@ -81,7 +120,7 @@ function LoginPage(props: PaperProps) {
               "Don't have an account? Register
             </Anchor>
           </Link>
-          <Button type="submit" radius="xl">
+          <Button onClick={sendRequestLogin} type="submit" radius="xl">
             Login
           </Button>
         </Group>
