@@ -1,68 +1,60 @@
-﻿using Server.Data;
-using Server.Models.Repository;
+﻿using Microsoft.EntityFrameworkCore;
 using Server.Models;
+using Server.Services;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace Server.Services
+public class ReviewService : IReviewService
 {
-    public class ReviewService
-    {
-        public async Task<List<UserEntity>> GetAll()
-        {
-            return null;
-        }
-        public async Task<UserEntity> GetById(int id)
-        {
-            return null;
-        }
-        public async Task<UserEntity> Create(RegUser user)
-        {
-            UserEntity newUser = new UserEntity();
-            newUser.Id = GetNextId();
-            newUser.Name = user.Name;
-            newUser.Email = user.Email;
-            newUser.Pwd = BCrypt.Net.BCrypt.HashPassword(user.Password);
-            newUser.Role = "User";
-            newUser.DateCreate = DateTime.Now;
-            newUser.provaiderName = user.provaiderName;
-            newUser.AccesToken = user.AccesToken;
-            newUser.RefreshToken = user.RefreshToken;
-            newUser.ExpirationTime = "1111";
-            using (AppDbContent db = new AppDbContent())
-            {
-                db.User.AddRange(newUser);
-                db.SaveChanges();
-            }
-            return newUser;
-        }
-        public async Task<UserEntity> Update(UserEntity user)
-        {
-            return null;
-        }
-        public async Task<bool> Delete(int id)
-        {
-            return true;
-        }
+    private readonly YourDbContext _dbContext;
 
-        public async Task<UserEntity> GetUserByEmail(string email)
+    public ReviewService(YourDbContext dbContext)
+    {
+        _dbContext = dbContext;
+    }
+
+    public async Task<IEnumerable<Review>> GetAllReviewsAsync()
+    {
+        return await _dbContext.Reviews.ToListAsync();
+    }
+
+    public async Task<Review> GetReviewByIdAsync(int id)
+    {
+        return await _dbContext.Reviews.FirstOrDefaultAsync(r => r.Id == id);
+    }
+
+    public async Task CreateReviewAsync(Review review)
+    {
+        _dbContext.Reviews.Add(review);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task UpdateReviewAsync(int id, Review review)
+    {
+        var existingReview = await _dbContext.Reviews.FirstOrDefaultAsync(r => r.Id == id);
+        if (existingReview != null)
         {
-            if (email == null) throw new ArgumentNullException(nameof(email));
-            UserEntity user = new UserEntity();
-            using (AppDbContent db = new AppDbContent())
-            {
-                user = await db.User.FirstOrDefaultAsync(x => x.Email.ToLower() == email.ToLower());
-            }
-            return user;
+            // Update the properties of the existing review with the new values
+            existingReview.Title = review.Title;
+            existingReview.Name = review.Name;
+            existingReview.Category = review.Category;
+            existingReview.Description = review.Description;
+            existingReview.Grade = review.Grade;
+            existingReview.Genre = review.Genre;
+            existingReview.ImageLink = review.ImageLink;
+
+            await _dbContext.SaveChangesAsync();
         }
-        private int GetNextId()
+    }
+
+    public async Task DeleteReviewAsync(int id)
+    {
+        var review = await _dbContext.Reviews.FirstOrDefaultAsync(r => r.Id == id);
+        if (review != null)
         {
-            UserEntity id = new UserEntity();
-            using (AppDbContent db = new AppDbContent())
-            {
-                id = db.User
-             .OrderByDescending(u => u.Id)
-             .FirstOrDefault();
-            }
-            return id == null ? 1 : id.Id + 1;
+            _dbContext.Reviews.Remove(review);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }
