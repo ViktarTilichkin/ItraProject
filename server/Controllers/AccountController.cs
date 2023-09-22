@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Server.Models.ApiRequest;
 using Server.Models.Options;
 using Server.Services;
+using Server.Models.ApiResponse;
 
 namespace Server.Controllers
 {
@@ -17,7 +18,7 @@ namespace Server.Controllers
             m_AccountService = service;
         }
         [HttpPost("[action]")]
-        public async Task<TokenData> Login(Login user)
+        public async Task<LoginResponse> Login(LoginRequest user)
         {
             return await m_AccountService.Token(user.Email, user.Password);
         }

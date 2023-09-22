@@ -8,6 +8,7 @@ import React, {
 import { Pagination } from "@mantine/core";
 import Item from "./Item";
 import storage from "../../storage/films.json";
+import { Link } from "react-router-dom";
 
 function List({ searchString, expression }: any) {
   const pageSize = useRef(4);
@@ -53,7 +54,11 @@ function List({ searchString, expression }: any) {
   }, []);
 
   return (
+    
     <div>
+      <Link to="/review" style={{ cursor: "pointer" }}>
+        <span className="material-symbols-outlined">add</span>
+      </Link>
       {paginatedList.map((el, index) => (
         <Item key={index} filmItem={el} />
       ))}

@@ -24,7 +24,6 @@ import { useUserStorage } from '../../storage/userStorage';
 import { useGetUserMutation } from "../../services/user";
 
 function LoginPage(props: PaperProps) {
-  const bcrypt = require("bcryptjs");
   const { name, email, accessToken, handleLogin, handleLogout } = useUserStorage();
   const [getUser] = useGetUserMutation();
   const form = useForm({
@@ -43,31 +42,46 @@ function LoginPage(props: PaperProps) {
 
   const navigate = useNavigate();
 
-  function hashPassword(password: any) {
-    try {
-      const saltRounds = 10; // Количество "раундов" соли (рекомендуется от 10 и выше)
-      const hashedPassword = bcrypt.hash(password, saltRounds);
-      return hashedPassword;
-    } catch (error) {
-      throw error;
-    }
-  }
 
   async function sendRequestLogin() {
     const user = form.values;
-    console.log(user);
-    await hashPassword(user.password)
-      .then((hashedPassword: string) => {
-        user.password = hashedPassword;
-      });
     getUser(user).then((response: any) => {
-      console.log(response);
-      //const resp = response.data;
-      //const newUser = { name: resp.name, email: resp.email, accessToken: resp.accesToken, expirationTime: resp.expirationTime, refreshToken: resp.refreshToken };
-      //handleLogin(newUser);
-      navigate("/");
+      const resp = response.data;
+      if (resp.tokenData !== null) {
+        const newUser = { name: resp.name, email: resp.email, accessToken: resp.tokenData.accessToken, expirationTime: 'resp.expirationTime', refreshToken: resp.tokenData.refreshToken };
+        handleLogin(newUser);
+        navigate("/");
+      }
+      alert('Ошибка логина или пароля');
     });
   }
+  const handleGoogleSignUp = async () => {
+    const provider = new GoogleAuthProvider();
+    const auth = getAuth();
+    try {
+      const user = {
+        email: '',
+        password: '',
+      };
+      await signInWithPopup(auth, provider).then((userCredential) => {
+        user.email = userCredential.user.email ?? '';
+      })
+      user.password = user.email;
+      await getUser(user).then((response: any) => {
+        const resp = response.data;
+        if (resp.tokenData !== null) {
+          const newUser = { name: resp.name, email: resp.email, accessToken: resp.tokenData.accessToken, expirationTime: 'resp.expirationTime', refreshToken: resp.tokenData.refreshToken };
+          handleLogin(newUser);
+          navigate("/");
+        }
+        else {
+          alert('Ошибка логина или пароля');
+        }
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <Paper
@@ -82,7 +96,7 @@ function LoginPage(props: PaperProps) {
       </Text>
 
       <Group grow mb="md" mt="md">
-        <GoogleButton radius="xl">Google</GoogleButton>
+        <GoogleButton onClick={handleGoogleSignUp} radius="xl">Google</GoogleButton>
       </Group>
 
       <Divider label="Or continue with email" labelPosition="center" my="lg" />

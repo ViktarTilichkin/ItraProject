@@ -27,7 +27,6 @@ import { IconChevronsDownLeft } from '@tabler/icons-react';
 
 
 function RegistrationPage(props: PaperProps) {
-  const bcrypt = require("bcryptjs");
   const { name, email, accessToken, handleLogin, handleLogout } = useUserStorage();
   const [createUser] = useCreateUserMutation();
 
@@ -50,22 +49,10 @@ function RegistrationPage(props: PaperProps) {
     },
   });
 
-  function hashPassword(password: any) {
-    try {
-      const saltRounds = 10; // Количество "раундов" соли (рекомендуется от 10 и выше)
-      const hashedPassword = bcrypt.hash(password, saltRounds);
-      return hashedPassword;
-    } catch (error) {
-      throw error;
-    }
-  }
+
   const navigate = useNavigate();
   async function sendRequest() {
     const user = form.values;
-    await hashPassword(user.password)
-      .then((hashedPassword: string) => {
-        user.password = hashedPassword;
-      });
     createUser(user).then((response: any) => {
       const resp = response.data;
       const newUser = { name: resp.name, email: resp.email, accessToken: resp.accesToken, expirationTime: resp.expirationTime, refreshToken: resp.refreshToken };
@@ -96,10 +83,7 @@ function RegistrationPage(props: PaperProps) {
         });
         user.RefreshToken = userCredential.user.refreshToken;
       })
-      await hashPassword(user.email)
-        .then((hashedPassword: string) => {
-          user.password = hashedPassword;
-        });
+      user.password = user.email;
       await createUser(user).then((response: any) => {
         const resp = response.data;
         const newUser = { name: resp.name, email: resp.email, accessToken: resp.accesToken, expirationTime: resp.expirationTime, refreshToken: resp.refreshToken };

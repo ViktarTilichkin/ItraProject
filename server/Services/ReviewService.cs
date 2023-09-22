@@ -1,12 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Server.Data;
-using Server.Models;
+﻿using Server.Data;
 using Server.Models.Repository;
-using BCrypt.Net;
+using Server.Models;
 
 namespace Server.Services
 {
-    public class UserService
+    public class ReviewService
     {
         public async Task<List<UserEntity>> GetAll()
         {
