@@ -1,5 +1,5 @@
 import { Input, Button } from "@mantine/core";
-import { Dropzone, MIME_TYPES } from "@mantine/dropzone";
+//import { Dropzone, MIME_TYPES } from "@mantine/dropzone";
 import style from "./style.module.css";
 import React, { useState, useRef } from "react";
 import { useCreateReviewMutation } from "../../services/review";
