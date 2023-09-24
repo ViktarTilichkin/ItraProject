@@ -3,7 +3,6 @@ import { Button, ButtonProps } from '@mantine/core';
 import { GoogleIcon } from './icons/GoogleIcon';
 
 interface GoogleButtonProps extends ButtonProps {
-  // Добавляем onClick в интерфейс
   onClick?: () => void;
 }
 

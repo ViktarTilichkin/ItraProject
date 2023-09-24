@@ -17,7 +17,6 @@ export function useUserStorage() {
     const [refreshToken, setRefreshToken] = useState('');
 
     useEffect(() => {
-        // При монтировании компонента, попробуйте загрузить данные из куков
         const savedName = Cookies.get('name');
         const savedEmail = Cookies.get('email');
         const savedAccessToken = Cookies.get('accessToken');

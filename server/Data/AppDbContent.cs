@@ -15,7 +15,7 @@ namespace Server.Data
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseMySql("server=localhost;database=ItraDB;uid=root;password=Nastya94#;",
+            optionsBuilder.UseMySql("server=localhost;database=ItraDB;uid=root;password=123456;",
                 new MySqlServerVersion(new Version(8, 0, 25)));
         }
     }

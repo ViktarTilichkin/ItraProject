@@ -1,9 +1,4 @@
-<<<<<<< HEAD
 import { Input, Button, Image, Group, Textarea } from "@mantine/core";
-=======
-import { Input, Button } from "@mantine/core";
-//import { Dropzone, MIME_TYPES } from "@mantine/dropzone";
->>>>>>> 43ba42895cec24133fde43d8d7e4fbe78bb4f340
 import style from "./style.module.css";
 import React, { useState, useRef, useEffect } from "react";
 import { useCreateReviewMutation } from "../../services/review";
@@ -36,13 +31,8 @@ function CreateOperation() {
   async function handleClick() {
     if (img !== null) {
       const storageref = ref(storage, "images/" + img.name);
-      uploadBytes(storageref, img)
-        .then((snapshot: any) => {
-          console.log("succesful");
-        })
-        .catch((error: any) => {
-          console.error(error);
-        });
+      console.log(storageref);
+      uploadBytes(storageref, img);
     }
 
     createReview(value);
@@ -50,7 +40,7 @@ function CreateOperation() {
   const openRef = useRef<() => void>(null);
 
   useEffect(() => {
-    // Обновляем текст в зависимости от значения img
+
     if (img) {
       openRef.current?.();
     }

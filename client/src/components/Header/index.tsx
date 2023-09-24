@@ -14,7 +14,7 @@ function Header() {
       <div className={style.logo}>
         <Link to="/" style={{ cursor: "pointer" }}>
           <Button className={style.button} variant="light" color="indigo">
-            WHAT SHOULD U WATCH/READ/PLAY
+            GoWatch
           </Button>
         </Link>
         <div className="btn-link" onClick={() => setIsDark(!isDark)}>

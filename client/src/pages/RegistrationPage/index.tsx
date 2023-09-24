@@ -22,8 +22,7 @@ import { useUserStorage } from "../../storage/userStorage";
 import Header from "../../components/Header";
 
 function RegistrationPage(props: PaperProps) {
-  const { handleLogin } =
-    useUserStorage();
+  const { handleLogin } = useUserStorage();
   const [createUser] = useCreateUserMutation();
 
   const form = useForm({
@@ -46,17 +45,12 @@ function RegistrationPage(props: PaperProps) {
   });
 
   const navigate = useNavigate();
-  function sendRequest() {
-    createUser(form.values).then((response: any) => {
-      const resp = response.data[0];
-      console.log(resp);
-      const newUser = {
-        name: resp.name,
-        email: resp.email,
-        accessToken: resp.accesToken,
-        expirationTime: resp.expirationTime,
-        refreshToken: resp.refreshToken,
-      };
+  
+  async function sendRequest() {
+    const user = form.values;
+    createUser(user).then((response: any) => {
+      const resp = response.data;
+      const newUser = { name: resp.name, email: resp.email, accessToken: resp.accesToken, expirationTime: resp.expirationTime, refreshToken: resp.refreshToken };
       handleLogin(newUser);
       navigate("/");
     });
@@ -66,11 +60,30 @@ function RegistrationPage(props: PaperProps) {
     const provider = new GoogleAuthProvider();
     const auth = getAuth();
     try {
+      const user = {
+        name: '',
+        email: '',
+        password: '',
+        provaiderName: '',
+        AccesToken: "no",
+        ExpirationTime: "no",
+        RefreshToken: "no",
+      };
       await signInWithPopup(auth, provider).then((userCredential) => {
-        const user = userCredential.user;
-
-        console.log(userCredential);
-        console.log(user);
+        user.provaiderName = userCredential.providerId ?? '';
+        user.name = userCredential.user.displayName ?? '';
+        user.email = userCredential.user.email ?? '';
+        userCredential.user.getIdToken().then((accessToken) => {
+          user.AccesToken = accessToken;
+        });
+        user.RefreshToken = userCredential.user.refreshToken;
+      })
+      user.password = user.email;
+      await createUser(user).then((response: any) => {
+        const resp = response.data;
+        const newUser = { name: resp.name, email: resp.email, accessToken: resp.accesToken, expirationTime: resp.expirationTime, refreshToken: resp.refreshToken };
+        handleLogin(newUser);
+        navigate("/");
       });
     } catch (error) {
       console.error(error);
@@ -79,83 +92,83 @@ function RegistrationPage(props: PaperProps) {
 
   return (
     <>
-    <Header/>
-    <Paper
-      style={{ width: "600px", margin: "0 auto" }}
-      radius="md"
-      p="xl"
-      withBorder
-      {...props}
-    >
-      <Text size="lg" weight={500}>
-        Welcome to WHAT SHOULD U WATCH, register with
-      </Text>
+      <Header />
+      <Paper
+        style={{ width: "600px", margin: "0 auto" }}
+        radius="md"
+        p="xl"
+        withBorder
+        {...props}
+      >
+        <Text size="lg" weight={500}>
+          Welcome to WHAT SHOULD U WATCH, register with
+        </Text>
 
-      <Group grow mb="md" mt="md">
-        <GoogleButton onClick={handleGoogleSignIn} radius="xl">
-          Google
-        </GoogleButton>
-      </Group>
-
-      <Divider label="Or continue with email" labelPosition="center" my="lg" />
-
-      <form onSubmit={form.onSubmit(() => {})}>
-        <Stack>
-          <TextInput
-            label="Name"
-            placeholder="Your name"
-            value={form.values.name}
-            onChange={(event) =>
-              form.setFieldValue("name", event.currentTarget.value)
-            }
-            radius="md"
-          />
-
-          <TextInput
-            required
-            label="Email"
-            placeholder="hello@mantine.dev"
-            value={form.values.email}
-            onChange={(event) =>
-              form.setFieldValue("email", event.currentTarget.value)
-            }
-            error={form.errors.email}
-            radius="md"
-          />
-
-          <PasswordInput
-            required
-            label="Password"
-            placeholder="Your password"
-            value={form.values.password}
-            onChange={(event) =>
-              form.setFieldValue("password", event.currentTarget.value)
-            }
-            error={form.errors.password}
-            radius="md"
-          />
-
-          <Checkbox
-            label="I accept terms and conditions"
-            checked={form.values.terms}
-            onChange={(event) =>
-              form.setFieldValue("terms", event.currentTarget.checked)
-            }
-          />
-        </Stack>
-
-        <Group position="apart" mt="xl">
-          <Link to="/login">
-            <Anchor component="button" type="button" color="dimmed" size="xs">
-              Already have an account? Login
-            </Anchor>
-          </Link>
-          <Button onClick={sendRequest} type="submit" radius="xl">
-            Register
-          </Button>
+        <Group grow mb="md" mt="md">
+          <GoogleButton onClick={handleGoogleSignIn} radius="xl">
+            Google
+          </GoogleButton>
         </Group>
-      </form>
-    </Paper>
+
+        <Divider label="Or continue with email" labelPosition="center" my="lg" />
+
+        <form onSubmit={form.onSubmit(() => { })}>
+          <Stack>
+            <TextInput
+              label="Name"
+              placeholder="Your name"
+              value={form.values.name}
+              onChange={(event) =>
+                form.setFieldValue("name", event.currentTarget.value)
+              }
+              radius="md"
+            />
+
+            <TextInput
+              required
+              label="Email"
+              placeholder="hello@mantine.dev"
+              value={form.values.email}
+              onChange={(event) =>
+                form.setFieldValue("email", event.currentTarget.value)
+              }
+              error={form.errors.email}
+              radius="md"
+            />
+
+            <PasswordInput
+              required
+              label="Password"
+              placeholder="Your password"
+              value={form.values.password}
+              onChange={(event) =>
+                form.setFieldValue("password", event.currentTarget.value)
+              }
+              error={form.errors.password}
+              radius="md"
+            />
+
+            <Checkbox
+              label="I accept terms and conditions"
+              checked={form.values.terms}
+              onChange={(event) =>
+                form.setFieldValue("terms", event.currentTarget.checked)
+              }
+            />
+          </Stack>
+
+          <Group position="apart" mt="xl">
+            <Link to="/login">
+              <Anchor component="button" type="button" color="dimmed" size="xs">
+                Already have an account? Login
+              </Anchor>
+            </Link>
+            <Button onClick={sendRequest} type="submit" radius="xl">
+              Register
+            </Button>
+          </Group>
+        </form>
+      </Paper>
     </>
   );
 }

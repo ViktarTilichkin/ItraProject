@@ -14,17 +14,24 @@ import { GoogleButton } from "../../assets/SocialButtons";
 
 import { useForm } from "@mantine/form";
 import { Link, useNavigate } from "react-router-dom";
-import { useCreateUserMutation } from "../../services/user";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth"; // Импортируйте методы для аутентификации Firebase
+
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from "firebase/auth";
+import { useUserStorage } from '../../storage/userStorage';
+import { useGetUserMutation } from "../../services/user";
 import Header from "../../components/Header";
 
 function LoginPage(props: PaperProps) {
-  const [getUser] = useCreateUserMutation();
-
+  const { name, email, accessToken, handleLogin, handleLogout } = useUserStorage();
+  const [getUser] = useGetUserMutation();
   const form = useForm({
     initialValues: {
       email: "",
       password: "",
+      terms: true,
     },
 
     validate: {
@@ -36,77 +43,106 @@ function LoginPage(props: PaperProps) {
 
   const navigate = useNavigate();
 
-  function sendRequest() {
-    getUser(form.values).then(() => {
-      navigate("/");
+
+  async function sendRequestLogin() {
+    const user = form.values;
+    getUser(user).then((response: any) => {
+      const resp = response.data;
+      if (resp.tokenData !== null) {
+        const newUser = { name: resp.name, email: resp.email, accessToken: resp.tokenData.accessToken, expirationTime: 'resp.expirationTime', refreshToken: resp.tokenData.refreshToken };
+        handleLogin(newUser);
+        navigate("/");
+      }
+      alert('Ошибка логина или пароля');
     });
   }
-
-  const handleGoogleLogin = async () => {};
+  const handleGoogleSignUp = async () => {
+    const provider = new GoogleAuthProvider();
+    const auth = getAuth();
+    try {
+      const user = {
+        email: '',
+        password: '',
+      };
+      await signInWithPopup(auth, provider).then((userCredential) => {
+        user.email = userCredential.user.email ?? '';
+      })
+      user.password = user.email;
+      await getUser(user).then((response: any) => {
+        const resp = response.data;
+        if (resp.tokenData !== null) {
+          const newUser = { name: resp.name, email: resp.email, accessToken: resp.tokenData.accessToken, expirationTime: 'resp.expirationTime', refreshToken: resp.tokenData.refreshToken };
+          handleLogin(newUser);
+          navigate("/");
+        }
+        else {
+          alert('Ошибка логина или пароля');
+        }
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <>
-      <Header />
-      <Paper
-        style={{ width: "600px", margin: "0 auto" }}
-        radius="md"
-        p="xl"
-        withBorder
-        {...props}
-      >
-        <Text size="lg" weight={500}>
-          Welcome to WHAT SHOULD U WATCH, login with
-        </Text>
+    <Header />
+    <Paper
+      style={{ width: "600px", margin: "0 auto" }}
+      radius="md"
+      p="xl"
+      withBorder
+      {...props}
+    >
+      <Text size="lg" weight={500}>
+        Welcome to WHAT SHOULD U WATCH, login with
+      </Text>
 
-        <Group grow mb="md" mt="md">
-          <GoogleButton radius="xl">Google</GoogleButton>
+      <Group grow mb="md" mt="md">
+        <GoogleButton onClick={handleGoogleSignUp} radius="xl">Google</GoogleButton>
+      </Group>
+
+      <Divider label="Or continue with email" labelPosition="center" my="lg" />
+
+      <form onSubmit={form.onSubmit(() => { })}>
+        <Stack>
+          <TextInput
+            required
+            label="Email"
+            placeholder="hello@mantine.dev"
+            value={form.values.email}
+            onChange={(event) =>
+              form.setFieldValue("email", event.currentTarget.value)
+            }
+            error={form.errors.email}
+            radius="md"
+          />
+
+          <PasswordInput
+            required
+            label="Password"
+            placeholder="Your password"
+            value={form.values.password}
+            onChange={(event) =>
+              form.setFieldValue("password", event.currentTarget.value)
+            }
+            error={form.errors.password}
+            radius="md"
+          />
+        </Stack>
+
+        <Group position="apart" mt="xl">
+          <Link to="/reg">
+            <Anchor component="button" type="button" color="dimmed" size="xs">
+              "Don't have an account? Register
+            </Anchor>
+          </Link>
+          <Button onClick={sendRequestLogin} type="submit" radius="xl">
+            Login
+          </Button>
         </Group>
-
-        <Divider
-          label="Or continue with email"
-          labelPosition="center"
-          my="lg"
-        />
-
-        <form onSubmit={form.onSubmit(() => handleGoogleLogin())}>
-          <Stack>
-            <TextInput
-              required
-              label="Email"
-              placeholder="hello@mantine.dev"
-              value={form.values.email}
-              onChange={(event) =>
-                form.setFieldValue("email", event.currentTarget.value)
-              }
-              error={form.errors.email}
-              radius="md"
-            />
-
-            <PasswordInput
-              required
-              label="Password"
-              placeholder="Your password"
-              value={form.values.password}
-              onChange={(event) =>
-                form.setFieldValue("password", event.currentTarget.value)
-              }
-              error={form.errors.password}
-              radius="md"
-            />
-          </Stack>
-
-          <Group position="apart" mt="xl">
-            <Link to="/reg">
-              <Anchor component="button" type="button" color="dimmed" size="xs">
-                Don't have an account? Register
-              </Anchor>
-            </Link>
-            <Button onClick={sendRequest} type="submit" radius="xl">
-              Login
-            </Button>
-          </Group>
-        </form>
-      </Paper>
+      </form>
+    </Paper>
     </>
   );
 }
