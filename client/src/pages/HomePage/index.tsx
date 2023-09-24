@@ -17,10 +17,10 @@ function HomePage() {
   return (
     <div className={style.wrapper}>
          <Header />
+          <Search setSearchString={setSearchString} />
       <div className={style.preview}>
         <Filters setExpression={setExpression} />
         <div className={style.content}>
-          <Search setSearchString={setSearchString} />
           <List expression={expression} searchString={searchString} />
         </div>
       </div>

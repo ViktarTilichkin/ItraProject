@@ -9,11 +9,13 @@ import { Pagination } from "@mantine/core";
 import Item from "./Item";
 import storage from "../../storage/films.json";
 import { Link } from "react-router-dom";
+import { useUserStorage } from "../../storage/userStorage";
 
 function List({ searchString, expression }: any) {
   const pageSize = useRef(4);
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredStorage, setFilteredStorage] = useState(storage);
+  const { name, handleLogout } = useUserStorage();
 
   const filterFilm = useCallback(() => {
     if (
@@ -54,11 +56,7 @@ function List({ searchString, expression }: any) {
   }, []);
 
   return (
-    
-    <div>
-      <Link to="/review" style={{ cursor: "pointer" }}>
-        <span className="material-symbols-outlined">add</span>
-      </Link>
+    <>
       {paginatedList.map((el, index) => (
         <Item key={index} filmItem={el} />
       ))}
@@ -69,7 +67,7 @@ function List({ searchString, expression }: any) {
         onChange={handlePageChange}
         position="center"
       />
-    </div>
+    </>
   );
 }
 

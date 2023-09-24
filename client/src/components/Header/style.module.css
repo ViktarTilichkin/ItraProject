@@ -2,10 +2,15 @@
   display: flex;
   justify-content: space-between;
   padding: 2% 0;
+  align-items: center;
 }
 
-.containerBtns {
+.containerBtns, .logo {
   display: flex;
   justify-content: space-between;
-  width: 15%;
+  align-items: center;
+}
+
+.button{
+  margin-right: 10px;
 }

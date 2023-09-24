@@ -10,11 +10,17 @@ import "./index.css";
 
 import {initializeApp} from "firebase/app";
 import "firebase/auth";
-import { api } from "./firebase/index"
 
+const firebaseConfig = {
+  apiKey: "AIzaSyBxdjp9hlcY2mGnq5Pp5wSumM6_OEzVFSs",
+  authDomain: "courseproject-f468e.firebaseapp.com",
+  projectId: "courseproject-f468e",
+  storageBucket: "courseproject-f468e.appspot.com",
+  messagingSenderId: "36874883245",
+  appId: "1:36874883245:web:6aedbbb108776f29dff624",
+};
 
-
-const app = api;
+const app = initializeApp(firebaseConfig);
 
 const Context = createContext(null);
 

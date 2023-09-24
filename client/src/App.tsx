@@ -1,10 +1,10 @@
 import { Route, Routes } from "react-router-dom";
-import HomePage from "./pages/HomePage";
-import LoginPage from "./pages/LoginPage";
 import RegistrationPage from "./pages/RegistrationPage";
 import ReviewPage from "./pages/ReviewPage";
 import Layout from "./components/Layout";
 import { ThemeProvider } from "./providers/ThemeProvider";
+import LoginPage from "./pages/LoginPage";
+import HomePage from "./pages/HomePage";
 import CreateReview from "./pages/CreateReviewPage";
 
 function App() {

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Server.Data;
 using Server.Models;
 using Server.Services;
 using System.Collections.Generic;
@@ -7,11 +8,11 @@ using System.Threading.Tasks;
 
 public class ReviewService : IReviewService
 {
-    private readonly YourDbContext _dbContext;
+    private readonly AppDbContent _dbContext;
 
-    public ReviewService(YourDbContext dbContext)
+    public ReviewService(AppDbContent db)
     {
-        _dbContext = dbContext;
+        _dbContext = db;
     }
 
     public async Task<IEnumerable<Review>> GetAllReviewsAsync()

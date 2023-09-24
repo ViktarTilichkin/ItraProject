@@ -24,6 +24,7 @@ function Search({ setSearchString }: ISearchProps) {
           </Button>
         }
       />
+
     </div>
   );
 }

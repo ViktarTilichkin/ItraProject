@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   TextInput,
   PasswordInput,
@@ -17,25 +17,21 @@ import { GoogleButton } from "../../assets/SocialButtons";
 import { useForm } from "@mantine/form";
 import { Link, useNavigate } from "react-router-dom";
 import { useCreateUserMutation } from "../../services/user";
-import {
-  getAuth,
-  GoogleAuthProvider,
-  signInWithPopup,
-} from "firebase/auth";
-import { useUserStorage } from '../../storage/userStorage';
-import { IconChevronsDownLeft } from '@tabler/icons-react';
-
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { useUserStorage } from "../../storage/userStorage";
+import Header from "../../components/Header";
 
 function RegistrationPage(props: PaperProps) {
-  const { name, email, accessToken, handleLogin, handleLogout } = useUserStorage();
+  const { handleLogin } =
+    useUserStorage();
   const [createUser] = useCreateUserMutation();
 
   const form = useForm({
     initialValues: {
-      name: '',
-      email: '',
-      password: '',
-      provaiderName: '',
+      name: "",
+      email: "",
+      password: "",
+      provaiderName: "",
       AccesToken: "no",
       ExpirationTime: "no",
       RefreshToken: "no",
@@ -49,13 +45,18 @@ function RegistrationPage(props: PaperProps) {
     },
   });
 
-
   const navigate = useNavigate();
-  async function sendRequest() {
-    const user = form.values;
-    createUser(user).then((response: any) => {
-      const resp = response.data;
-      const newUser = { name: resp.name, email: resp.email, accessToken: resp.accesToken, expirationTime: resp.expirationTime, refreshToken: resp.refreshToken };
+  function sendRequest() {
+    createUser(form.values).then((response: any) => {
+      const resp = response.data[0];
+      console.log(resp);
+      const newUser = {
+        name: resp.name,
+        email: resp.email,
+        accessToken: resp.accesToken,
+        expirationTime: resp.expirationTime,
+        refreshToken: resp.refreshToken,
+      };
       handleLogin(newUser);
       navigate("/");
     });
@@ -65,30 +66,11 @@ function RegistrationPage(props: PaperProps) {
     const provider = new GoogleAuthProvider();
     const auth = getAuth();
     try {
-      const user = {
-        name: '',
-        email: '',
-        password: '',
-        provaiderName: '',
-        AccesToken: "no",
-        ExpirationTime: "no",
-        RefreshToken: "no",
-      };
       await signInWithPopup(auth, provider).then((userCredential) => {
-        user.provaiderName = userCredential.providerId ?? '';
-        user.name = userCredential.user.displayName ?? '';
-        user.email = userCredential.user.email ?? '';
-        userCredential.user.getIdToken().then((accessToken) => {
-          user.AccesToken = accessToken;
-        });
-        user.RefreshToken = userCredential.user.refreshToken;
-      })
-      user.password = user.email;
-      await createUser(user).then((response: any) => {
-        const resp = response.data;
-        const newUser = { name: resp.name, email: resp.email, accessToken: resp.accesToken, expirationTime: resp.expirationTime, refreshToken: resp.refreshToken };
-        handleLogin(newUser);
-        navigate("/");
+        const user = userCredential.user;
+
+        console.log(userCredential);
+        console.log(user);
       });
     } catch (error) {
       console.error(error);
@@ -96,6 +78,8 @@ function RegistrationPage(props: PaperProps) {
   };
 
   return (
+    <>
+    <Header/>
     <Paper
       style={{ width: "600px", margin: "0 auto" }}
       radius="md"
@@ -108,12 +92,14 @@ function RegistrationPage(props: PaperProps) {
       </Text>
 
       <Group grow mb="md" mt="md">
-        <GoogleButton onClick={handleGoogleSignIn} radius="xl">Google</GoogleButton>
+        <GoogleButton onClick={handleGoogleSignIn} radius="xl">
+          Google
+        </GoogleButton>
       </Group>
 
       <Divider label="Or continue with email" labelPosition="center" my="lg" />
 
-      <form onSubmit={form.onSubmit(() => { })}>
+      <form onSubmit={form.onSubmit(() => {})}>
         <Stack>
           <TextInput
             label="Name"
@@ -170,6 +156,7 @@ function RegistrationPage(props: PaperProps) {
         </Group>
       </form>
     </Paper>
+    </>
   );
 }
 

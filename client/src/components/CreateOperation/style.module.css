@@ -1,13 +1,23 @@
 .wrapper {
-    width: 700px;
-    height: 650px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  
-  h2 {
-    font: 700 16px "Inter";
-    color: #232134;
-  }
+width: 90%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+}
+
+.left{
+  width: 30%;
+}
+.right{
+  width: 60%;
+}
+
+h2 {
+  font: 700 16px "Inter";
+  color: #232134;
+  margin-top: 3%;
+}
+
+.button{
+  margin: 5% 0;
+}

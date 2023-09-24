@@ -6,8 +6,8 @@ import CreateOperation from "../../components/CreateOperation";
 function CreateReview() {
   return (
     <>
-          <Header />
-      <CreateOperation></CreateOperation>
+      <Header />
+      <CreateOperation/>
     </>
   );
 }
