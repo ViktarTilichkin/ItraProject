@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 import { Input, Button, Image, Group, Textarea } from "@mantine/core";
+=======
+import { Input, Button } from "@mantine/core";
+//import { Dropzone, MIME_TYPES } from "@mantine/dropzone";
+>>>>>>> 43ba42895cec24133fde43d8d7e4fbe78bb4f340
 import style from "./style.module.css";
 import React, { useState, useRef, useEffect } from "react";
 import { useCreateReviewMutation } from "../../services/review";
