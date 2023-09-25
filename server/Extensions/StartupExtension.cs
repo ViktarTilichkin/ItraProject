@@ -1,4 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
+using Server.Data;
 using Server.Services;
 
 namespace Server.Extensions
@@ -14,7 +15,7 @@ namespace Server.Extensions
         {
             services.AddTransient<UserService>();
             services.AddTransient<AccountService>();
-
+            services.AddTransient<AppDbContent>();
         }
     }
 }

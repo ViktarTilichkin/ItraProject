@@ -30,13 +30,13 @@ namespace Server
                         options.RequireHttpsMetadata = false;
                         options.TokenValidationParameters = new TokenValidationParameters
                         {
-                            ValidateIssuer = true, // укзывает, будет ли валидироваться издатель при валидации токена
-                            ValidIssuer = AuthOptions.ISSUER, // строка, представляющая издателя
-                            ValidateAudience = true, // будет ли валидироваться потребитель токена
-                            ValidAudience = AuthOptions.AUDIENCE, // установка потребителя токена
-                            ValidateLifetime = true, // будет ли валидироваться время существования
-                            IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(), // установка ключа безопасности
-                            ValidateIssuerSigningKey = true, // валидация ключа безопасности
+                            ValidateIssuer = true,
+                            ValidIssuer = AuthOptions.ISSUER, 
+                            ValidateAudience = true,
+                            ValidAudience = AuthOptions.AUDIENCE, 
+                            ValidateLifetime = true, 
+                            IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+                            ValidateIssuerSigningKey = true, 
                         };
                     });
 
@@ -46,13 +46,10 @@ namespace Server
                     builder.WithOrigins("http://localhost:3000");
                     builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
                 }));
-            //services.AddCors();
-            // Настройка сервисов, используемых в приложении (поговорим далее)
             services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
             });
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(options =>
             {
@@ -83,8 +80,6 @@ namespace Server
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            // Настройка middleware-компонентов, используемых в приложении (данные из файла Program)
-            // Configure the HTTP request pipeline.
             app.UseHttpsRedirection();
             app.UseRouting();
 
@@ -98,12 +93,11 @@ namespace Server
 
             app.UseCors("CorsPolicy");
 
-            //app.UseMiddleware<ExceptionMiddleware>();
 
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseResponseCaching(); // добавляем Middleware кэширования
+            app.UseResponseCaching(); 
 
             app.UseEndpoints(endpoints =>
             {

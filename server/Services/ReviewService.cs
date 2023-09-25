@@ -36,7 +36,6 @@ public class ReviewService : IReviewService
         var existingReview = await _dbContext.Reviews.FirstOrDefaultAsync(r => r.Id == id);
         if (existingReview != null)
         {
-            // Update the properties of the existing review with the new values
             existingReview.Title = review.Title;
             existingReview.Name = review.Name;
             existingReview.Category = review.Category;
