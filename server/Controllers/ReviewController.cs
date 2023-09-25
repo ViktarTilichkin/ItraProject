@@ -22,14 +22,14 @@ namespace Server.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Review>>> GetAllReviews()
         {
-            var reviews = await _reviewService.GetAllReviewsAsync();
+            var reviews = await _reviewService.GetAllReviews();
             return Ok(reviews);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Review>> GetReviewById(int id)
         {
-            var review = await _reviewService.GetReviewByIdAsync(id);
+            var review = await _reviewService.GetReviewById(id);
             if (review == null)
             {
                 return NotFound();
@@ -38,23 +38,23 @@ namespace Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateReview([FromBody] Review review)
+        public async Task<IActionResult> CreateReview(Review review)
         {
-            await _reviewService.CreateReviewAsync(review);
+            await _reviewService.CreateReview(review);
             return CreatedAtAction(nameof(GetReviewById), new { id = review.Id }, review);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateReview(int id, [FromBody] Review review)
+        public async Task<IActionResult> UpdateReview(Review review)
         {
-            await _reviewService.UpdateReviewAsync(id, review);
+            await _reviewService.UpdateReview(review);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteReview(int id)
         {
-            await _reviewService.DeleteReviewAsync(id);
+            await _reviewService.DeleteReview(id);
             return NoContent();
         }
     }

@@ -4,10 +4,10 @@ namespace Server.Services
 {
     public interface IReviewService
     {
-        Task<IEnumerable<Review>> GetAllReviewsAsync();
-        Task<Review> GetReviewByIdAsync(int id);
-        Task CreateReviewAsync(Review review);
-        Task UpdateReviewAsync(int id, Review review);
-        Task DeleteReviewAsync(int id);
+        Task<IEnumerable<Review>> GetAllReviews();
+        Task<Review> GetReviewById(int id);
+        Task CreateReview(Review review);
+        Task UpdateReview(Review review);
+        Task DeleteReview(int id);
     }
 }

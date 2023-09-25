@@ -25,7 +25,7 @@ namespace Server.Controllers
         //[HttpPost("[action]")]
         //public async Task<bool> RestoreToken(string token)
         //{
-        //    return  m_AccountService.GetIdTokenExpiry(token);
+        //    return m_AccountService.GetIdTokenExpiry(token);
         //}
         [HttpPost("[action]")]
         public async Task<IActionResult> Logout()

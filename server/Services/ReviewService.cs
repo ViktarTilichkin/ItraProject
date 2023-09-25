@@ -15,25 +15,25 @@ public class ReviewService : IReviewService
         _dbContext = db;
     }
 
-    public async Task<IEnumerable<Review>> GetAllReviewsAsync()
+    public async Task<IEnumerable<Review>> GetAllReviews()
     {
         return await _dbContext.Reviews.ToListAsync();
     }
 
-    public async Task<Review> GetReviewByIdAsync(int id)
+    public async Task<Review> GetReviewById(int id)
     {
         return await _dbContext.Reviews.FirstOrDefaultAsync(r => r.Id == id);
     }
 
-    public async Task CreateReviewAsync(Review review)
+    public async Task CreateReview(Review review)
     {
         _dbContext.Reviews.Add(review);
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateReviewAsync(int id, Review review)
+    public async Task UpdateReview(Review review)
     {
-        var existingReview = await _dbContext.Reviews.FirstOrDefaultAsync(r => r.Id == id);
+        var existingReview = await _dbContext.Reviews.FirstOrDefaultAsync(r => r.Id == review.Id);
         if (existingReview != null)
         {
             existingReview.Title = review.Title;
@@ -48,7 +48,7 @@ public class ReviewService : IReviewService
         }
     }
 
-    public async Task DeleteReviewAsync(int id)
+    public async Task DeleteReview(int id)
     {
         var review = await _dbContext.Reviews.FirstOrDefaultAsync(r => r.Id == id);
         if (review != null)
