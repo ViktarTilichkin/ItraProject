@@ -20,6 +20,7 @@ import { useCreateUserMutation } from "../../services/user";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useUserStorage } from "../../storage/userStorage";
 import Header from "../../components/Header";
+import Cookies from "js-cookie";
 
 function RegistrationPage(props: PaperProps) {
   const { handleLogin } = useUserStorage();
@@ -45,14 +46,19 @@ function RegistrationPage(props: PaperProps) {
   });
 
   const navigate = useNavigate();
-  
+
   async function sendRequest() {
     const user = form.values;
     createUser(user).then((response: any) => {
       const resp = response.data;
-      const newUser = { name: resp.name, email: resp.email, accessToken: resp.accesToken, expirationTime: resp.expirationTime, refreshToken: resp.refreshToken };
-      handleLogin(newUser);
-      navigate("/");
+      if (resp) {
+        const newUser = { id: resp.id, name: resp.name, email: resp.email, accessToken: resp.accesToken, expirationTime: resp.expirationTime, refreshToken: resp.refreshToken };
+        handleLogin(newUser);
+        navigate("/");
+      }
+      else {
+        alert('Ошибка');
+      }
     });
   }
 
@@ -81,12 +87,17 @@ function RegistrationPage(props: PaperProps) {
       user.password = user.email;
       await createUser(user).then((response: any) => {
         const resp = response.data;
-        const newUser = { name: resp.name, email: resp.email, accessToken: resp.accesToken, expirationTime: resp.expirationTime, refreshToken: resp.refreshToken };
-        handleLogin(newUser);
-        navigate("/");
+        if (resp) {
+          const newUser = { id: resp.id,name: resp.name, email: resp.email, accessToken: resp.accesToken, expirationTime: resp.expirationTime, refreshToken: resp.refreshToken };
+          handleLogin(newUser);
+          navigate("/");
+        }
+        else {
+          alert('Ошибка');
+        }
       });
     } catch (error) {
-      console.error(error);
+
     }
   };
 

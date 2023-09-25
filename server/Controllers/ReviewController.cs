@@ -7,14 +7,13 @@ using Server.Models;
 
 namespace Server.Controllers
 {
-
-    [Route("api/reviews")]
     [ApiController]
+    [Route("api/[controller]")]
     public class ReviewController : ControllerBase
     {
-        private readonly IReviewService _reviewService;
+        private readonly ReviewService _reviewService;
 
-        public ReviewController(IReviewService reviewService)
+        public ReviewController(ReviewService reviewService)
         {
             _reviewService = reviewService;
         }
@@ -22,40 +21,67 @@ namespace Server.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Review>>> GetAllReviews()
         {
-            var reviews = await _reviewService.GetAllReviews();
-            return Ok(reviews);
+            try
+            {
+                var reviews = await _reviewService.GetAllReviews();
+                return Ok(reviews);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("get/{id}")]
         public async Task<ActionResult<Review>> GetReviewById(int id)
         {
-            var review = await _reviewService.GetReviewById(id);
-            if (review == null)
+            try
             {
-                return NotFound();
+                return Ok(await _reviewService.GetReviewById(id));
             }
-            return Ok(review);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateReview(Review review)
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateReview([FromBody] Review review)
         {
-            await _reviewService.CreateReview(review);
-            return CreatedAtAction(nameof(GetReviewById), new { id = review.Id }, review);
+            try
+            {
+                return Ok(await _reviewService.CreateReview(review));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateReview(Review review)
+        [HttpPut("update/{id}")]
+        public async Task<IActionResult> UpdateReview([FromBody] Review review)
         {
-            await _reviewService.UpdateReview(review);
-            return NoContent();
+            try
+            {
+                return Ok(await _reviewService.UpdateReview(review));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteReview(int id)
         {
-            await _reviewService.DeleteReview(id);
-            return NoContent();
+            try
+            {
+                return Ok(await _reviewService.DeleteReview(id));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 

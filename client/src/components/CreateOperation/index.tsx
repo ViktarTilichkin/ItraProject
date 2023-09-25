@@ -2,13 +2,14 @@ import { Input, Button, Image, Group, Textarea } from "@mantine/core";
 import style from "./style.module.css";
 import React, { useState, useRef, useEffect } from "react";
 import { useCreateReviewMutation } from "../../services/review";
-import { ref, uploadBytes } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../firebase/index";
 import { IconChevronDown } from "@tabler/icons-react";
 import category from "../../storage/category.json";
 import { Text, rem } from "@mantine/core";
 import { IconUpload, IconPhoto, IconX } from "@tabler/icons-react";
 import { Dropzone, DropzoneProps, IMAGE_MIME_TYPE } from "@mantine/dropzone";
+import Cookies from "js-cookie";
 
 function CreateOperation() {
   const [createReview] = useCreateReviewMutation();
@@ -20,6 +21,7 @@ function CreateOperation() {
     grade: "",
     genre: "",
     imageLink: "",
+    OwnerId: 0
   });
 
   const [img, setImg] = useState<File | null>(null);
@@ -28,15 +30,38 @@ function CreateOperation() {
     setValue({ ...value, [event.target.name]: event.target.value });
   }
 
-  async function handleClick() {
-    if (img !== null) {
-      const storageref = ref(storage, "images/" + img.name);
-      console.log(storageref);
-      uploadBytes(storageref, img);
+  async function uploadImage() {
+    if (img) {
+      const storageRef = ref(storage, "images/" + img.name);
+      try {
+        const snapshot = await uploadBytes(storageRef, img);
+        const downloadURL = await getDownloadURL(snapshot.ref);
+        value.imageLink = downloadURL;
+        const id = Cookies.get('id');
+        if(id) value.OwnerId = + id;
+        //setValue({ ...value, imageLink: downloadURL });
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
     }
-
-    createReview(value);
   }
+
+  async function handleClick() {
+    await uploadImage();
+    await createReview(value);
+  }
+
+
+
+  // async function handleClick() {
+  //   if (img !== null) {
+  //     const storageref = ref(storage, "images/" + img.name);
+  //     uploadBytes(storageref, img);
+  //     console.log(storageref);
+  //   }
+  //   //value.imageLink = 
+  //   createReview(value);
+  // }
   const openRef = useRef<() => void>(null);
 
   useEffect(() => {
@@ -116,6 +141,7 @@ function CreateOperation() {
         <h2>Category</h2>
         <Input
           size="lg"
+          onChange={changeInputValue}
           name="category"
           component="select"
           placeholder="review category"

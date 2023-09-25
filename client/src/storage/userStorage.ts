@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
 
 interface User {
+    id: number | null;
     name: string;
     email: string;
     accessToken: string,
@@ -10,6 +11,7 @@ interface User {
 }
 
 export function useUserStorage() {
+    const [id, setId] = useState<number | null>(null);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [accessToken, setAccessToken] = useState('');
@@ -17,12 +19,14 @@ export function useUserStorage() {
     const [refreshToken, setRefreshToken] = useState('');
 
     useEffect(() => {
+        const savedId = Cookies.get('id');
         const savedName = Cookies.get('name');
         const savedEmail = Cookies.get('email');
         const savedAccessToken = Cookies.get('accessToken');
         const savedExpirationTime = Cookies.get('expirationTime');
         const savedRefreshToken = Cookies.get('refreshToken');
-        if (savedName && savedEmail && savedAccessToken && savedExpirationTime && savedRefreshToken) {
+        if (savedName && savedId && savedEmail && savedAccessToken && savedExpirationTime && savedRefreshToken) {
+            setId(+savedId);
             setName(savedName);
             setEmail(savedEmail);
             setAccessToken(savedAccessToken);
@@ -33,15 +37,14 @@ export function useUserStorage() {
     }, []);
 
     const handleLogin = (newUser: User) => {
-
+        setId(newUser.id);
         setName(newUser.name);
         setEmail(newUser.email);
         setAccessToken(newUser.accessToken);
         setExpirationTime(newUser.expirationTime);
         setRefreshToken(newUser.refreshToken);
 
-        console.log(name, email, accessToken, expirationTime, refreshToken);
-
+        Cookies.set('id', '' + newUser.id);
         Cookies.set('name', newUser.name);
         Cookies.set('email', newUser.email);
         Cookies.set('accessToken', newUser.accessToken);
@@ -50,11 +53,13 @@ export function useUserStorage() {
     };
 
     const handleLogout = () => {
+        setId(null);
         setName('');
         setEmail('');
         setAccessToken('');
         setExpirationTime('');
         setRefreshToken('');
+        Cookies.remove('id');
         Cookies.remove('name');
         Cookies.remove('email');
         Cookies.remove('accessToken');

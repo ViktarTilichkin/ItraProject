@@ -57,7 +57,7 @@ namespace Server.Services
 
             if (updateUser == null)
             {
-                return null; 
+                return null;
             }
 
             updateUser.Name = user.Name;
@@ -87,11 +87,11 @@ namespace Server.Services
             if (email == null) throw new ArgumentNullException(nameof(email));
             return await _dbContext.User.FirstOrDefaultAsync(x => x.Email.ToLower() == email.ToLower());
         }
-
         private int GetNextId()
         {
             var lastUser = _dbContext.User.OrderByDescending(u => u.Id).FirstOrDefault();
             return lastUser == null ? 1 : lastUser.Id + 1;
         }
+
     }
 }

@@ -16,10 +16,8 @@ namespace Server
         public IConfiguration Configuration { get; }
         public void ConfigureServices(IServiceCollection services)
         {
-            // Получение ConnectionString из конфигурации
             var connectionString = Configuration.GetConnectionString("MySQLConnection");
-            // Добавление сервисов, использующих ConnectionString
-            services.AddRepositories(connectionString);
+            
             services.AddServices();
 
             services.AddMemoryCache();

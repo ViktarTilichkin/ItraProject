@@ -6,7 +6,7 @@ namespace Server.Services
     {
         Task<IEnumerable<Review>> GetAllReviews();
         Task<Review> GetReviewById(int id);
-        Task CreateReview(Review review);
+        Task<int> CreateReview(Review review);
         Task UpdateReview(Review review);
         Task DeleteReview(int id);
     }

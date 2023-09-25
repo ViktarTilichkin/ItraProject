@@ -2,31 +2,31 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const reviewApi = createApi({
     reducerPath: 'reviewApi',
-    baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:1024/api/' }),
+    baseQuery: fetchBaseQuery({ baseUrl: 'https://localhost:7170/api/' }),
     endpoints: (builder) => ({
         getReview: builder.query({
-            query: () => `review/`
+            query: () => `Review`
         }),
         getReviewById: builder.query({
-            query: (id) => `review/${id}`
+            query: (id) => `Review/get/${id}`
         }),
         createReview: builder.mutation({
             query: (data) => ({
-                url: `review/`,
+                url: `Review/create`,
                 method: 'POST',
                 body: data
             }),
         }),
         updateReview: builder.mutation({
             query: (data) => ({
-                url: `review/${data.id}`,
+                url: `Review/update/${data.id}`,
                 method: 'PUT',
                 body: data
             }),
         }),
         deleteReview: builder.mutation({
             query: (id) => ({
-                url: `review/${id}`,
+                url: `Review/delete/${id}`,
                 method: 'DELETE',
             }),
         }),

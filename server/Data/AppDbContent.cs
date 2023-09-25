@@ -8,6 +8,7 @@ namespace Server.Data
     {
         public DbSet<UserEntity> User { get; set; } = null!;
         public DbSet<Review> Reviews { get; internal set; }
+        
 
         public AppDbContent()
         {

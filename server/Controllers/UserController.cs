@@ -17,6 +17,7 @@ namespace Server.Controllers
         {
             m_Service = rep;
         }
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
