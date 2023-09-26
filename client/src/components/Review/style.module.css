@@ -10,13 +10,17 @@
 .summary h1 {
   font: 28px 700 "Inter";
   color: #232134;
+  margin-right: 50px;
 }
 
 .header-flex{
   display: flex;
-  justify-content: space-between;
 }
-
+.editFlex{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 .flex {
   display: flex;
   margin: 16px 0;

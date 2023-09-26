@@ -1,6 +1,8 @@
 import React from "react";
 import style from "./style.module.css";
 import Cookies from "js-cookie";
+import { useDeleteReviewMutation } from "../../services/review";
+import { useNavigate } from "react-router-dom";
 
 interface IReview {
   id: number;
@@ -15,6 +17,8 @@ interface IReview {
 }
 
 function Review({ review }: { review: IReview }) {
+  const [deleteReview] = useDeleteReviewMutation()
+  const navigate = useNavigate();
   const isOwner = () => {
     const userId = Cookies.get('id');
     if (userId && review.ownerId == +userId) {
@@ -23,20 +27,26 @@ function Review({ review }: { review: IReview }) {
     return false;
   };
   const owner = isOwner();
+  function sendRequest() {
+    deleteReview(review.id)
+    navigate("/");
+  }
   return (
     <>
       <div className={style["summary"]}>
 
 
         <div className={style["header-flex"]}>
+
+          <img src={review.imageLink} alt={review.title} />
           <div>
-            <img src={review.imageLink} alt={review.title} />
-            <h1>{review.title}</h1>
-            <div>
+            <div className={style['editFlex']}>
+              <h1>{review.title}</h1>
               {owner ?
                 (<><span
                   style={{ cursor: "pointer" }}
                   className="material-symbols-outlined"
+                  onClick={sendRequest}
                 >
                   delete
                 </span>
@@ -45,13 +55,15 @@ function Review({ review }: { review: IReview }) {
                     className="material-symbols-outlined"
                   >
                     edit
-                  </span></>) : (<></>)}
+                  </span></>) : (<></>)
+              }
+
 
             </div>
-          </div>
-          <div className={style["flex"]}>
-            <p>{review.category}</p>
-            <p>{review.name}</p>
+            <div className={style["flex"]}>
+              <p>{review.category}</p>
+              <p>{review.name}</p>
+            </div>
           </div>
         </div>
       </div>
