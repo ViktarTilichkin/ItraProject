@@ -6,63 +6,77 @@ import React, {
   useMemo,
 } from "react";
 import { Pagination } from "@mantine/core";
+import { useGetReviewQuery } from "../../services/review";
 import Item from "./Item";
-import storage from "../../storage/films.json";
-import { Link } from "react-router-dom";
-import { useUserStorage } from "../../storage/userStorage";
 
 function List({ searchString, expression }: any) {
-  const pageSize = useRef(4);
+  const pageSizeRef = useRef(4);
   const [currentPage, setCurrentPage] = useState(1);
-  const [filteredStorage, setFilteredStorage] = useState(storage);
-  const { name, handleLogout } = useUserStorage();
+  interface IReview {
+    id: number;
+    title: string;
+    name: string;
+    category: string;
+    description: string;
+    grade: number;
+    genre: string;
+    imageLink: string;
+  }
+  const { data: review } = useGetReviewQuery({});
+  let data: IReview[] = [];
+  if (review) {
+    data = review;
+  }
 
-  const filterFilm = useCallback(() => {
-    if (
-      !searchString &&
-      expression.industry === "default" &&
+
+  const [filteredStorage, setfilteredStorage] = useState<IReview[]>(data);
+
+  const filterReview = (() => {
+    if (!searchString  && expression.industry === "default" &&
       !expression.ratingFrom &&
-      !expression.ratingTo
-    ) {
-      return storage;
+      !expression.ratingTo) {
+      return review;
     }
-
-    return storage.filter(
-      ({ title, category, grade }) =>
-        title.toLowerCase().includes(searchString.toLowerCase()) &&
+    return review.filter(
+      (review: IReview) =>
+        review.title.toLowerCase().includes(searchString.toLowerCase()) &&
         (expression.industry === "default" ||
-          category === expression.industry) &&
-        (!expression.ratingFrom || grade >= expression.ratingFrom) &&
-        (!expression.ratingTo || grade <= expression.ratingTo)
+          review.category === expression.industry) &&
+        (!expression.ratingFrom || review.grade >= expression.ratingFrom) &&
+        (!expression.ratingTo || review.grade <= expression.ratingTo)
     );
-  }, [searchString, expression]);
+  });
 
   useEffect(() => {
-    setFilteredStorage(filterFilm());
-  }, [searchString, expression, filterFilm]);
+    setfilteredStorage(filterReview());
+  }, [searchString, expression, filterReview]);
 
   useEffect(() => {
     setCurrentPage(1);
   }, [filteredStorage, searchString, expression]);
 
-  const paginatedList = useMemo(() => {
-    const startIndex = (currentPage - 1) * pageSize.current;
-    const endIndex = startIndex + pageSize.current;
-    return filteredStorage.slice(startIndex, endIndex);
-  }, [filteredStorage, currentPage]);
 
-  const handlePageChange = useCallback((page: React.SetStateAction<number>) => {
+  const paginatedList = useMemo(
+    () =>
+      filteredStorage?.slice(
+        (currentPage - 1) * pageSizeRef.current,
+        currentPage * pageSizeRef.current
+      ) || [],
+    [filteredStorage, currentPage]
+  );
+
+  const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page);
   }, []);
 
   return (
     <>
-      {paginatedList.map((el, index) => (
+      {paginatedList.map((el: any, index: any) => (
         <Item key={index} filmItem={el} />
       ))}
 
       <Pagination
-        total={Math.ceil(filteredStorage.length / pageSize.current)}
+        total={Math.ceil(filteredStorage?.length / pageSizeRef.current) || 0}
         value={currentPage}
         onChange={handlePageChange}
         position="center"

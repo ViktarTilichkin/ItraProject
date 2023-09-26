@@ -68,6 +68,7 @@ export function useUserStorage() {
     };
 
     return {
+        id,
         name,
         email,
         accessToken,

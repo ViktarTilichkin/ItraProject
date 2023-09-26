@@ -1,10 +1,11 @@
 import style from "./style.module.css";
 import { Link } from "react-router-dom";
 
-function Item({ filmItem }:any) {
+function Item({ filmItem }: any) {
   return (
     <div className={style["wrapper"]}>
       <div className={style["item"]}>
+        <img src={filmItem.imageLink} alt={filmItem.title} />
         <Link to={`/review/${filmItem.id}`}>
           <div className={style["content"]}>
             <div className={style["content-wrapp"]}>

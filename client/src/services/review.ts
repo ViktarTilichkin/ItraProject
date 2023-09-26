@@ -16,6 +16,9 @@ export const reviewApi = createApi({
                 method: 'POST',
                 body: data
             }),
+            transformResponse: (response)=>{
+                return response
+            },
         }),
         updateReview: builder.mutation({
             query: (data) => ({
@@ -23,12 +26,18 @@ export const reviewApi = createApi({
                 method: 'PUT',
                 body: data
             }),
+            transformResponse: (response)=>{
+                return response
+            },
         }),
         deleteReview: builder.mutation({
             query: (id) => ({
                 url: `Review/delete/${id}`,
                 method: 'DELETE',
             }),
+            transformResponse: (response)=>{
+                return response
+            },
         }),
     })
 })

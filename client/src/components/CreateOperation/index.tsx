@@ -10,6 +10,7 @@ import { Text, rem } from "@mantine/core";
 import { IconUpload, IconPhoto, IconX } from "@tabler/icons-react";
 import { Dropzone, DropzoneProps, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
 
 function CreateOperation() {
   const [createReview] = useCreateReviewMutation();
@@ -29,7 +30,7 @@ function CreateOperation() {
   function changeInputValue(event: { target: { name: any; value: any } }) {
     setValue({ ...value, [event.target.name]: event.target.value });
   }
-
+  const navigate = useNavigate();
   async function uploadImage() {
     if (img) {
       const storageRef = ref(storage, "images/" + img.name);
@@ -39,7 +40,6 @@ function CreateOperation() {
         value.imageLink = downloadURL;
         const id = Cookies.get('id');
         if(id) value.OwnerId = + id;
-        //setValue({ ...value, imageLink: downloadURL });
       } catch (error) {
         console.error("Error uploading image:", error);
       }
@@ -49,19 +49,9 @@ function CreateOperation() {
   async function handleClick() {
     await uploadImage();
     await createReview(value);
+    navigate("/");
   }
 
-
-
-  // async function handleClick() {
-  //   if (img !== null) {
-  //     const storageref = ref(storage, "images/" + img.name);
-  //     uploadBytes(storageref, img);
-  //     console.log(storageref);
-  //   }
-  //   //value.imageLink = 
-  //   createReview(value);
-  // }
   const openRef = useRef<() => void>(null);
 
   useEffect(() => {

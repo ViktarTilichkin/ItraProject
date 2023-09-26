@@ -7,6 +7,13 @@
   position: relative;
 
 }
+img{
+  width: 100px;
+  height: 100px;
+background-repeat: no-repeat;
+background-size: cover;
+margin-right: 5%;
+}
 
 .wrapper:hover {
   border-color: #5e95fc8e;
@@ -14,7 +21,6 @@
 
 .item {
   display: flex;
-  justify-content: space-between;
   padding: 25px;
 }
 
@@ -31,6 +37,7 @@
   display: flex;
   position: absolute;
   right: 5%;
+
 }
 
 .film-h {
