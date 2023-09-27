@@ -60,7 +60,7 @@ namespace Server.Services
         {
             UserEntity user = await m_Service.GetUserByEmail(email);
             if (user == null) return (null, null); // если пользователя не найдено
-            if (BCrypt.Net.BCrypt.EnhancedVerify(password, user.Pwd)) return (null, null);
+            if (!BCrypt.Net.BCrypt.EnhancedVerify(password, user.Pwd)) return (null, null);
             //if (!user.Pwd.Equals(password)) return (null, null);
             var claims = new List<Claim> {
             new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
